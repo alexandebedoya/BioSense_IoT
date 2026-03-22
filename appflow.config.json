@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "id": "biosense-iot",
+      "appId": "biosense-iot",
       "root": "frontend"
     }
   ]
