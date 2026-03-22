@@ -1,8 +1,4 @@
 {
-  "apps": [
-    {
-      "appId": "f2e97e3b",
-      "root": "frontend"
-    }
-  ]
+  "appId": "e21ba164",
+  "root": "frontend"
 }
