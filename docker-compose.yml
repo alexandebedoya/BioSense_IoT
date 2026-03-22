@@ -22,6 +22,7 @@ services:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/biosense
       - SPRING_R2DBC_USERNAME=user
       - SPRING_R2DBC_PASSWORD=password
+      - JJWT_SECRET=mySecretKeyWithEnoughLengthForHS256Algorithm123456789
     depends_on:
       - postgres
 
@@ -34,6 +35,7 @@ services:
       - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/biosense
       - SPRING_R2DBC_USERNAME=user
       - SPRING_R2DBC_PASSWORD=password
+      - JJWT_SECRET=mySecretKeyWithEnoughLengthForHS256Algorithm123456789
     depends_on:
       - postgres
 
