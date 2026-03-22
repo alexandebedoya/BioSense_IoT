@@ -3,6 +3,7 @@ export type AirQualityLevel = 'NORMAL' | 'PRECAUCION' | 'PELIGRO'
 export interface SensorData {
   mq4: number
   mq7: number
+  mq135: number
   nivel: AirQualityLevel
   timestamp: string
 }

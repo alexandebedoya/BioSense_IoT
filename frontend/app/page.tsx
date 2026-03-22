@@ -18,17 +18,20 @@ type ViewType = "dashboard" | "monitoreo" | "analisis" | "alertas" | "sensores" 
 
 export default function AirQualityApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
   const [currentView, setCurrentView] = useState<ViewType>("dashboard")
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { data } = useSensorData()
 
   // Login handler
-  const handleLogin = () => {
+  const handleLogin = (userToken: string) => {
+    setToken(userToken)
     setIsAuthenticated(true)
   }
 
   // Logout handler
   const handleLogout = () => {
+    setToken(null)
     setIsAuthenticated(false)
     setSidebarOpen(false)
   }

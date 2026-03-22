@@ -20,7 +20,7 @@ node_modules/
 target/
 *.class
 *.jar
-!**/gradle/wrapper/gradle-wrapper.jar
+!**/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.log

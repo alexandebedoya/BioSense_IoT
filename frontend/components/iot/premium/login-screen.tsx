@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Wind, Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { getAuthUrl } from "@/lib/api-config"
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth'
+import { Capacitor } from '@capacitor/core'
 
 interface LoginScreenProps {
-  onLogin: () => void
+  onLogin: (token: string) => void
 }
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
@@ -15,14 +18,60 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      GoogleAuth.initialize()
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Simulate login
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setIsLoading(false)
-    onLogin()
+    setError(null)
+
+    try {
+      const response = await fetch(`${getAuthUrl()}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password }) // Usamos email como username por ahora
+      })
+
+      if (!response.ok) throw new Error('Credenciales incorrectas')
+
+      const data = await response.json()
+      onLogin(data.token)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const googleUser = await GoogleAuth.signIn()
+      const idToken = googleUser.authentication.idToken
+
+      const response = await fetch(`${getAuthUrl()}/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken })
+      })
+
+      if (!response.ok) throw new Error('Error al validar con Google')
+
+      const data = await response.json()
+      onLogin(data.token)
+    } catch (err: any) {
+      console.error(err)
+      setError("Cancelado o error en Google Auth")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -117,6 +166,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             </Button>
           </form>
 
+          {error && <p className="text-destructive text-center mt-4 text-sm font-medium">{error}</p>}
+
           {/* Register Link */}
           <p className="text-center mt-6 text-sm text-muted-foreground">
             Nuevo?{" "}
@@ -140,7 +191,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
             type="button"
             variant="outline"
             className="w-full h-14 rounded-2xl border-border/50 hover:bg-secondary/50 transition-all"
-            onClick={onLogin}
+            onClick={handleGoogleLogin}
           >
             <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
               <path
