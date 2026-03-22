@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: biosense-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: biosense
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  sensor-service:
+    build:
+      context: ./backend/sensor-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/biosense
+      - SPRING_R2DBC_USERNAME=user
+      - SPRING_R2DBC_PASSWORD=password
+    depends_on:
+      - postgres
+
+  identity-service:
+    build:
+      context: ./backend/identity-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/biosense
+      - SPRING_R2DBC_USERNAME=user
+      - SPRING_R2DBC_PASSWORD=password
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
