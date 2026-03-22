@@ -67,8 +67,9 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       const data = await response.json()
       onLogin(data.token)
     } catch (err: any) {
-      console.error(err)
-      setError("Cancelado o error en Google Auth")
+      console.error("Detalle error Google:", err)
+      // Mostramos el mensaje real del error para saber qué falta configurar
+      setError(`Error Google: ${err.message || JSON.stringify(err)}`)
     } finally {
       setIsLoading(false)
     }
